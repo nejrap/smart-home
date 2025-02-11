@@ -1,3 +1,5 @@
+
+IoT tehnologije za razvoj pametne kuće
 Ovaj rad se bavi implementacijom sistema pametnog doma zasnovanog na IoT tehnologijama, koristeći NodeMCU ESP8266, DHT11 senzor, aktivni buzzer, LED rasvjetu i Firebase platformu za pohranu podataka. Sistem omogućava korisnicima praćenje uvjeta u prostoriji, kao što su temperatura i vlažnost, 
 te daljinsko upravljanje uređajima poput LED diode i alarma. Razvijen je web interfejs koristeći HTML i JavaScript, čime je korisnicima omogućeno intuitivno i jednostavno upravljanje sistemom putem interneta.
 
