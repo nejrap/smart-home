@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Podaci sa DHT11 senzora</title>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-app.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/8.10.0/firebase-database.js"></script>
+    <style>
+      body {
+        font-family: "Segoe UI", Tahoma, Geneva, Verdana, sans-serif;
+        background-image: url('https://theintelligence.com/wp-content/uploads/smart-home-sized-750x500.jpg');
+        background-size: cover;
+        background-position: center;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 100vh;
+        margin: 0;
+        color: white;
+        animation: fadeInBackground 2s ease-in-out; /* Animacija za pozadinu */
+      }
+
+      @keyframes fadeInBackground {
+        0% {
+          opacity: 0;
+          transform: scale(1.1); /* Početna veličina */
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1); /* Originalna veličina */
+        }
+      }
+
+      .container {
+        background-color: rgba(255, 255, 255, 0.8);
+        padding: 30px 50px;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+        text-align: center;
+        width: 100%;
+        max-width: 600px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 10px;
+        font-size: 36px;
+        font-weight: bold;
+      }
+
+      h2 {
+        color: #555;
+        margin-bottom: 30px;
+        font-size: 24px;
+      }
+
+      .data {
+        font-size: 48px;
+        font-weight: bold;
+        margin: 20px 0;
+      }
+
+      .label {
+        font-size: 18px;
+        color: #555;
+      }
+
+      .temperature {
+        color: #e74c3c;
+      }
+
+      .humidity {
+        color: #3498db;
+      }
+
+      .alarm {
+        font-size: 20px;
+        font-weight: bold;
+        color: #e74c3c;
+        margin-top: 20px;
+        display: none;
+      }
+
+      .fade-in {
+        animation: fadeIn 1s ease-in-out;
+      }
+
+      @keyframes fadeIn {
+        0% {
+          opacity: 0;
+          transform: scale(0.9);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      button {
+        background-color: #3498db;
+        color: white;
+        font-size: 18px;
+        padding: 10px 20px;
+        margin: 10px;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        transition: background-color 0.3s;
+      }
+
+      button:hover {
+        background-color: #2980b9;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Smart Home</h1>
+      <h2>Nermana & Nejra</h2>
+      <p class="label">Temperatura:</p>
+      <p id="temperatura" class="data temperature">-- °C</p>
+
+      <p class="label">Vlažnost:</p>
+      <p id="vlaznost" class="data humidity">-- %</p>
+
+      <p id="alarm" class="alarm">⚠️ UPOZORENJE: Temperatura prelazi 24 °C! ⚠️</p>
+
+      <!-- Dugme za kontrolu LED -->
+      <p>
+        <button id="ledOn" onclick="setLedStatus('ON')">Uključi svjetlo</button>
+        <button id="ledOff" onclick="setLedStatus('OFF')">Isključi svjetlo</button>
+      </p>
+    </div>
+
+    <script>
+      // Firebase konfiguracija
+      var firebaseConfig = {
+        apiKey: "AIzaSyC_PlrskkCE7ETSIy6HrdnOxe-8ZKT_h0U",
+        authDomain: "project1-e449f.firebaseapp.com",
+        databaseURL: "https://project1-e449f-default-rtdb.firebaseio.com/",
+        projectId: "project1-e449f",
+        storageBucket: "project1-e449f.firebasestorage.app",
+        messagingSenderId: "142587417087",
+        appId: "1:142587417087:web:c96ff0127d9db64ed257ca",
+      };
+
+      // Inicijalizacija Firebase-a
+      firebase.initializeApp(firebaseConfig);
+      var database = firebase.database();
+
+      // Funkcija za prikaz podataka sa animacijom
+      function updateData(elementId, value) {
+        var element = document.getElementById(elementId);
+        element.innerText = value;
+        element.classList.add("fade-in");
+        setTimeout(() => {
+          element.classList.remove("fade-in");
+        }, 1000);
+      }
+
+      // Očitavanje temperature
+      database.ref("/senzor/temperatura").on("value", function (snapshot) {
+        var temperatura = snapshot.val();
+        updateData("temperatura", temperatura + " °C");
+
+        // Provera alarma
+        var alarmElement = document.getElementById("alarm");
+        if (temperatura > 24) {
+          alarmElement.style.display = "block"; // Prikaz alarma
+        } else {
+          alarmElement.style.display = "none"; // Sakrij alarm
+        }
+      });
+
+      // Očitavanje vlažnosti
+      database.ref("/senzor/vlaznost").on("value", function (snapshot) {
+        updateData("vlaznost", snapshot.val() + " %");
+      });
+
+      // Funkcija za postavljanje statusa LED-a na Firebase
+      function setLedStatus(status) {
+        var ledRef = firebase.database().ref("/ledStatus");
+        ledRef.set(status); // Postavljanje statusa na ON ili OFF
+      }
+    </script>
+  </body>
+</html>
